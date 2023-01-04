@@ -64,56 +64,59 @@ class ia:
         if board[startPos] != None and board[startPos][0] == turnPlayer:
             spacesToMove = endPos - startPos
             #Cas pour un pion lambda
-            if spacesToMove == MoveL or spacesToMove == MoveR or spacesToMove == EatL or spacesToMove == EatR:
-                if str(startPos)[-1] == "0" and spacesToMove == MoveL:
-                    return False
-                elif str(startPos)[-1] == "9" and spacesToMove == MoveR:
-                    return False
-                elif (str(startPos)[-1] == "0" or str(startPos)[-1] == "1" )and spacesToMove == EatL:
-                    return False
-                elif (str(startPos)[-1] == "9" or str(startPos)[-1] == "8" ) and spacesToMove == EatR:
-                    return False
-                
-                match spacesToMove:
-                    case (9 | -9 | 11 | -11):
-                        if board[endPos] == None:
-                            return True
-                        else :
-                            return False
-                    case (18 | -18 | 22 | -22):
-                        middlePos = startPos + int(spacesToMove/2)
-                        if board[middlePos] != None and board[middlePos][0] != turnPlayer and board[startPos+spacesToMove] == None:
-                            return True
-                        else:
-                            return False
+            if 0<spacesToMove+startPos <100:
+                if spacesToMove == MoveL or spacesToMove == MoveR or spacesToMove == EatL or spacesToMove == EatR:
+                    if str(startPos)[-1] == "0" and spacesToMove == MoveL:
+                        return False
+                    elif str(startPos)[-1] == "9" and spacesToMove == MoveR:
+                        return False
+                    elif (str(startPos)[-1] == "0" or str(startPos)[-1] == "1" )and spacesToMove == EatL:
+                        return False
+                    elif (str(startPos)[-1] == "9" or str(startPos)[-1] == "8" ) and spacesToMove == EatR:
+                        return False
+                    
+                    match spacesToMove:
+                        case (9 | -9 | 11 | -11):
+                            if board[endPos] == None:
+                                return True
+                            else :
+                                return False
+                        case (18 | -18 | 22 | -22):
+                            middlePos = startPos + int(spacesToMove/2)
+                            if board[middlePos] != None and board[middlePos][0] != turnPlayer and board[startPos+spacesToMove] == None:
+                                return True
+                            else:
+                                return False
 
-            #Cas pour une dame            
-            if board[startPos][1]:
-                if turnPlayer ==0 :
-                    BackR,BackL,BackEatR,BackEatL = self.associationPlayer(1)
-                else:
-                    BackR,BackL,BackEatR,BackEatL = self.associationPlayer(0)
-                if str(startPos)[-1] == "0" and spacesToMove == BackL:
+                #Cas pour une dame            
+                if board[startPos][1]:
+                    if turnPlayer ==0 :
+                        BackR,BackL,BackEatR,BackEatL = self.associationPlayer(1)
+                    else:
+                        BackR,BackL,BackEatR,BackEatL = self.associationPlayer(0)
+                    if str(startPos)[-1] == "0" and spacesToMove == BackL:
+                        return False
+                    elif str(startPos)[-1] == "9" and spacesToMove == BackR:
+                        return False
+                    elif (str(startPos)[-1] == "0" or str(startPos)[-1] == "1" ) and spacesToMove == BackEatL:
+                        return False
+                    elif (str(startPos)[-1] == "9" or str(startPos)[-1] == "8" ) and spacesToMove == BackEatR:
+                        return False
+                    
+                    match spacesToMove:
+                        case (9 | -9 | 11 | -11):
+                            if board[endPos] == None:
+                                return True
+                            else :
+                                return False
+                        case (18 | -18 | 22 | -22):
+                            middlePos = startPos + int(spacesToMove/2)
+                            if board[middlePos] != None and board[middlePos][0] != turnPlayer and board[startPos+spacesToMove] == None:
+                                return True
+                            else:
+                                return False
+                else :
                     return False
-                elif str(startPos)[-1] == "9" and spacesToMove == BackR:
-                    return False
-                elif (str(startPos)[-1] == "0" or str(startPos)[-1] == "1" ) and spacesToMove == BackEatL:
-                    return False
-                elif (str(startPos)[-1] == "9" or str(startPos)[-1] == "8" ) and spacesToMove == BackEatR:
-                    return False
-                
-                match spacesToMove:
-                    case (9 | -9 | 11 | -11):
-                        if board[endPos] == None:
-                            return True
-                        else :
-                            return False
-                    case (18 | -18 | 22 | -22):
-                        middlePos = startPos + int(spacesToMove/2)
-                        if board[middlePos] != None and board[middlePos][0] != turnPlayer and board[startPos+spacesToMove] == None:
-                            return True
-                        else:
-                            return False
             else :
                 return False
         else :
