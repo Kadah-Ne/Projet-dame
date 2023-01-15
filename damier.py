@@ -110,5 +110,34 @@ class damier :
                 Ligne = ""
                 cpt = 0
 
+    def printBoardT(self):
+        aze = "| |"
+        for a in range(10):
+            aze += "|"+str(a)+"|"
+        print(aze)
+        cpt = 0
+        cpta = 0
+        Ligne = ""        
+        for j in self.Board:
+            for i in j:
+                if cpt == 0 : 
+                    Ligne += f"|{cpta}|"
+                    cpta +=1
+                if i == self.BlackPawn:
+                    Ligne += "|x|"
+                elif i == self.WhitePawn:
+                    Ligne += "|o|"
+                elif i == self.WhiteQueen:
+                    Ligne += "|X|"
+                elif i == self.WhitePawn:
+                    Ligne += "|O|"
+                else:
+                    Ligne += "| |"
+                cpt +=1
+                if cpt >= 10:
+                    print(Ligne)
+                    Ligne = ""
+                    cpt = 0
+
             
 

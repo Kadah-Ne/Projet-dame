@@ -7,7 +7,7 @@ a = actions()
 player = 0
 
 while a.Playable:    
-    board.printBoard()
+    board.printBoardT()
     startPos,endPos = input(f"Votre action Joueur {player} : \n").split(",")
     startPos = int(startPos)
     endPos = int(endPos)
