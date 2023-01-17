@@ -6,29 +6,29 @@ class actions:
     def movement(self,board,startPos,endPos,currPlayer): 
         startX,startY = self.posTranslator(board,startPos)
         endX,endY = self.posTranslator(board,endPos)
-        if board[startX][startY] != " ":
-            player = board[startX][startY].player
+        if board[startX][startY] != None:
+            player = board[startX][startY][0]
             if player != currPlayer :
-                self.IllegalMove(currPlayer)
+                return self.IllegalMove(currPlayer)
             else :
-                if currPlayer == 0 and endPos - startPos > 0 and not board[startX][startY].isDame:
-                    self.IllegalMove(currPlayer)
-                elif currPlayer == 1 and endPos - startPos < 0 and not board[startX][startY].isDame:
-                    self.IllegalMove(currPlayer)
+                if currPlayer == 0 and endPos - startPos > 0 and not board[startX][startY][1]:
+                    return self.IllegalMove(currPlayer)
+                elif currPlayer == 1 and endPos - startPos < 0 and not board[startX][startY][1]:
+                    return self.IllegalMove(currPlayer)
                 else:
                     if startPos+22 == endPos or startPos+18 == endPos or startPos-22 == endPos or startPos-18 == endPos: 
                         if self.checkEat(board,startPos,endPos,player):
-                            if board[startX][startY] != " ":
+                            if board[startX][startY] != None:
                                 board[endX][endY] = board[startX][startY]
-                                board[startX][startY] = " "
+                                board[startX][startY] = None
                             else:
                                 self.IllegalMove(player)
                         else:
                                 self.IllegalMove(player)
                     elif startPos+11 == endPos or startPos+9 == endPos or startPos-11 == endPos or startPos-9 == endPos:
-                        if board[startX][startY] != " ":
+                        if board[startX][startY] != None:
                                 board[endX][endY] = board[startX][startY]
-                                board[startX][startY] = " "
+                                board[startX][startY] = None
                         else:
                             self.IllegalMove(player)
                     else:
@@ -38,7 +38,7 @@ class actions:
                     elif currPlayer == 1 and endX == 9:
                         self.checkPromote(endX,endY,board)
         else:
-            self.checkPromote(endX,endY,board)
+            return self.IllegalMove(currPlayer)
 
     def checkEat(self,board,start,end,player):
         cheater = False
@@ -46,27 +46,27 @@ class actions:
             if end - start > 0 :
                 if start+22 == end:
                     x,y = self.posTranslator(board,start + 11)
-                    if board[x][y] != " " and board[x][y].player != player:
-                        board[x][y] = " "
+                    if board[x][y] != None and board[x][y][0] != player:
+                        board[x][y] = None
                     else: 
                         cheater = True
                 elif start+18 == end:
                     x,y = self.posTranslator(board,start + 9)
-                    if board[x][y] != " " and board[x][y].player != player :
-                        board[x][y] = " "
+                    if board[x][y] != None and board[x][y][0] != player :
+                        board[x][y] = None
                     else:
                         cheater = True
             elif end - start < 0:
                 if start-22 == end:
                     x,y = self.posTranslator(board,start - 11)
-                    if board[x][y] != " " and board[x][y].player != player :
-                        board[x][y] = " "
+                    if board[x][y] != None and board[x][y][0] != player :
+                        board[x][y] = None
                     else: 
                         cheater = True
                 elif start-18 == end:
                     x,y = self.posTranslator(board,start - 9)
-                    if board[x][y] != " " and board[x][y].player != player :
-                        board[x][y] = " "
+                    if board[x][y] != None and board[x][y][0] != player :
+                        board[x][y] = None
                     else:
                         cheater = True
         if not cheater :
@@ -89,11 +89,11 @@ class actions:
                     for j in i:
                         
                         if cpt == 0 :
-                            return(nbi,nbj)
+                            return(nbi+1,nbj)
                         cpt -= 1
                         nbj+=1
                 nbi+=1
 
     def IllegalMove(self,player):
-        print(f"Action interdite de la part du joueur {player}, fin de la partie.")
-        self.Playable = False
+        print(f"Action interdite de la part du joueur {player}.")
+        return False

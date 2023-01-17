@@ -3,10 +3,10 @@ class damier :
     def __init__(self):
         self.Board = []
         self.IABoard = []
-        self.BlackPawn = pion(1)
-        self.WhitePawn = pion(0)
-        self.WhiteQueen = dame(0)
-        self.BlackQueen = dame(1)
+        self.BlackPawn = (1,False) #pion(1)
+        self.WhitePawn = (0,False) #pion(0)
+        self.WhiteQueen = (0,True) #dame(0)
+        self.BlackQueen = (1,True) #dame(1)
         self.createBoard()
         self.convertIA()
 
@@ -29,7 +29,7 @@ class damier :
                             if cptPawn == 5:
                                 break
                         else :
-                            i.append(" ")
+                            i.append(None)
                 elif 0<=cpt<=3  and cpt%2 != 0: 
                     cptPawn = 0
                     for j in range (0,10):
@@ -37,10 +37,10 @@ class damier :
                             i.append(self.BlackPawn)
                             cptPawn+=1
                             if cptPawn == 5:
-                                i.append(" ")
+                                i.append(None)
                                 break
                         else :
-                            i.append(" ")
+                            i.append(None)
                 elif 6<=cpt<=9  and cpt%2 == 0: 
                     cptPawn = 0
                     for j in range (0,10):
@@ -50,7 +50,7 @@ class damier :
                             if cptPawn == 5:
                                 break
                         else :
-                            i.append(" ")
+                            i.append(None)
                 elif 6<=cpt<=9  and cpt%2 != 0: 
                     cptPawn = 0
                     for j in range (0,10):
@@ -58,13 +58,13 @@ class damier :
                             i.append(self.WhitePawn)
                             cptPawn+=1
                             if cptPawn == 5:
-                                i.append(" ")
+                                i.append(None)
                                 break
                         else :
-                            i.append(" ")
+                            i.append(None)
                 else :
                     for j in range(0,10):
-                        i.append(" ")
+                        i.append(None)
             cpt+=1
 
     def convertIA(self):
@@ -82,7 +82,9 @@ class damier :
                 else:
                     self.IABoard.append(None)
     
-    def printBoard(self):
+    def printBoard(self,testBoard = None):
+        if not testBoard :
+            testBoard = self.IABoard
         aze = "| |"
         for a in range(10):
             aze += "|"+str(a)+"|"
@@ -90,7 +92,7 @@ class damier :
         cpt = 0
         cpta = 0
         Ligne = ""        
-        for i in self.IABoard:
+        for i in testBoard:
             if cpt == 0 : 
                 Ligne += f"|{cpta}|"
                 cpta +=1

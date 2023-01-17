@@ -1,11 +1,14 @@
 from random import *
+from damier import *
 class ia:
     def __init__(self) -> None:
         self.board = []
         self.listeJouable = []
+
         pass
     
     def play(self,plateau : list,premier_joueur : bool) -> tuple:
+        
         listePions = []
         self.board = plateau
         cpt = 0
@@ -49,6 +52,8 @@ class ia:
             
                 
     def estJouable(self,ListePion,Player):
+        # dam = damier()
+        # dam.printBoard()
         if Player :
             idPlayer = 0
             MoveR = -9
@@ -63,18 +68,20 @@ class ia:
             EatL = 18
         for i in ListePion:
             if self.board[i+MoveR] == None or self.board[i+MoveL] == None:
-                if str(i)[-1] == "9" and self.board[i+MoveL] != None:
+                if i%10 == 0 and self.board[i+MoveR] != None:
                     continue
-                elif i%10 == 0 and self.board[i+MoveR] != None:
+                elif str(i)[-1] == "9" and self.board[i+MoveL] != None:
                     continue
 
                 self.listeJouable.append(i)
-            elif (self.board[i+MoveR][0] != idPlayer or self.board[i+MoveL][0] !=idPlayer) and (self.board[i+EatR] == None or self.board[i+EatL] == None):
-                
+            elif (self.board[i+MoveR][0] != idPlayer) and (self.board[i+EatR] == None):
+                if (i%10 == 0 or str(i)[-1] == "1" ) and self.board[i+EatR] != None:
+                    continue
+                self.listeJouable.append(i)  
+
+            elif (self.board[i+MoveL][0] !=idPlayer)  and (self.board[i+EatL] == None)  :
                 if str(i)[-1] == ("9" or "8") and self.board[i+EatL] != None:
                     continue
-                elif (i%10 == 0 or str(i)[-1] == "1" ) and self.board[i+EatR] != None:
-                    continue
-                self.listeJouable.append(i)                      
+                self.listeJouable.append(i)  
                 
         
