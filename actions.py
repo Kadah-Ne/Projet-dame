@@ -4,8 +4,9 @@ class actions:
         self.Playable = True
         pass
     def movement(self,board,startPos,endPos,currPlayer): 
-        startX,startY = self.posTranslator(board,startPos)
-        endX,endY = self.posTranslator(board,endPos)
+        startX,startY = int(startPos[0]),int(startPos[1])
+        endX,endY = int(endPos[0]),int(endPos[1])
+        startPos,endPos = int(startPos),int(endPos)
         if board[startX][startY] != None:
             player = board[startX][startY][0]
             if player != currPlayer :
@@ -75,8 +76,8 @@ class actions:
             return(False)
 
     def checkPromote(self,x,y,board):
-        #board[x][y] = dame(board[x][y].player)
-        a=1
+        board[x][y] = (board[x][y][0],True)
+        
 
 
     def posTranslator(self,board,n : int):

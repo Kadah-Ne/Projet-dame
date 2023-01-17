@@ -12,17 +12,18 @@ class Jeu :
         self.move = ""
         self.movement = True
 
-        self.canvas = tk.Canvas(self.fenetre, width=600, height=600)
+        self.canvas = tk.Canvas(self.fenetre, width=500, height=600)
         self.canvas.pack()
         self.canvas.bind("<Button-1>", self.pion_clique)
 
-        self.dessinePlateau()
+        self.dessinePlateau("")
         self.dessinePions(self.board.Board)
         self.fenetre.mainloop()
         
         
-    def dessinePlateau(self):
+    def dessinePlateau(self,IaPlays):
         self.fenetre.title("Jeu de dames")
+        self.canvas.create_text((250, 550),text=f"Move de l'IA : {IaPlays}",fill="Black",font='tkDefaeultFont 12')
         for i in range(10):
             for j in range(10):
                 couleur = "white" if (i + j) % 2 == 0 else "lightgrey"
@@ -33,10 +34,16 @@ class Jeu :
     def dessinePions(self,board):
         for i in range(len(board)):
             for j in range(len(board[i])):
-                if board[i][j] != None and board[i][j][0] == 1:
+                if board[i][j] != None and board[i][j][0] == 1 and board[i][j][1] == False:
                     self.canvas.create_oval(j * 50 + 10, i * 50 + 10, j * 50 + 40, i * 50 + 40, fill="black")
-                elif board[i][j] != None and board[i][j][0] == 0:
+                elif board[i][j] != None and board[i][j][0] == 0 and board[i][j][1] == False:
                     self.canvas.create_oval(j * 50 + 10, i * 50 + 10, j * 50 + 40, i * 50 + 40, fill="white")
+                elif board[i][j] != None and board[i][j][0] == 0 and board[i][j][1] == True:
+                    self.canvas.create_oval(j * 50 + 10, i * 50 + 10, j * 50 + 40, i * 50 + 40, fill="white")
+                    self.canvas.create_text((j*50+10,i*50+10),text="Q", fill="Black",font='tkDefaeultFont 12')
+                elif board[i][j] != None and board[i][j][0] == 1 and board[i][j][1] == True:
+                    self.canvas.create_oval(j * 50 + 10, i * 50 + 10, j * 50 + 40, i * 50 + 40, fill="black")
+                    self.canvas.create_text((j*50+10,i*50+10),text="Q", fill="black",font='tkDefaeultFont 12')
 
     def pion_clique(self,event):
         # Récupérer les coordonnées du clic de la souris
@@ -45,7 +52,6 @@ class Jeu :
         ligne = x // 50
         colonne = y // 50
         # Afficher les coordonnées du pion sélectionné
-        print(f"Pion sélectionné : ligne {ligne}, colonne {colonne}")
         if self.TargetStart == None:
             self.TargetStart = str(colonne)+str(ligne)
         elif self.TargetEnd == None:
@@ -57,19 +63,27 @@ class Jeu :
 
         if self.move != "":
             startPos,endPos = self.move.split(",")
-            startPos = int(startPos)
-            endPos = int(endPos)
-            self.movement = self.action.movement(board.Board,startPos,endPos,self.player)
+            # startPos = int(startPos)
+            # endPos = int(endPos)
+            self.movement = self.action.movement(self.board.Board,startPos,endPos,self.player)
             if self.movement != False:
                 if self.player == 0:
                     self.board.convertIA() 
-                    print(self.ia.play(plateau = self.board.IABoard,premier_joueur=False))
+                    IaPlays = self.ia.play(plateau = self.board.IABoard,premier_joueur=False)
                     self.player = 1
                 else :
+                    self.board.convertIA() 
                     self.player = 0
+                    IaPlays =""
+
                 self.canvas.delete("all")
-                self.dessinePlateau()
+                self.dessinePlateau(IaPlays)
                 self.dessinePions(self.board.Board)
+                print("----------------------")  
+                self.board.printBoard(self.board.IABoard)
+                print("----------------------")  
+                self.board.printBoardT()
+
             self.move = ""
 
 from damier import damier
