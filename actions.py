@@ -18,21 +18,21 @@ class actions:
                 else:
                     if startPos+22 == endPos or startPos+18 == endPos or startPos-22 == endPos or startPos-18 == endPos: 
                         if self.checkEat(board,startPos,endPos,player):
-                            if board[startX][startY] != None:
+                            if board[endX][endY] == None:
                                 board[endX][endY] = board[startX][startY]
                                 board[startX][startY] = None
                             else:
-                                self.IllegalMove(player)
+                                return self.IllegalMove(currPlayer)
                         else:
-                                self.IllegalMove(player)
+                                return self.IllegalMove(currPlayer)
                     elif startPos+11 == endPos or startPos+9 == endPos or startPos-11 == endPos or startPos-9 == endPos:
-                        if board[startX][startY] != None:
+                        if board[endX][endY] == None:
                                 board[endX][endY] = board[startX][startY]
                                 board[startX][startY] = None
                         else:
-                            self.IllegalMove(player)
+                            return self.IllegalMove(currPlayer)
                     else:
-                        self.IllegalMove(player)
+                        return self.IllegalMove(currPlayer)
                     if currPlayer == 0 and endX == 0:
                         self.checkPromote(endX,endY,board)
                     elif currPlayer == 1 and endX == 9:

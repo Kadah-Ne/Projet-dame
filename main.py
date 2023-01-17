@@ -9,14 +9,16 @@ class Jeu :
         self.ia = ia
         self.action = action
         self.player = 0
+        self.move = ""
+        self.movement = True
 
         self.canvas = tk.Canvas(self.fenetre, width=600, height=600)
         self.canvas.pack()
         self.canvas.bind("<Button-1>", self.pion_clique)
 
         self.dessinePlateau()
-        self.dessinePions(board.Board)
-        self.jouer()
+        self.dessinePions(self.board.Board)
+        self.fenetre.mainloop()
         
         
     def dessinePlateau(self):
@@ -45,86 +47,41 @@ class Jeu :
         # Afficher les coordonnées du pion sélectionné
         print(f"Pion sélectionné : ligne {ligne}, colonne {colonne}")
         if self.TargetStart == None:
-            self.TargetStart = str(ligne)+str(colonne)
+            self.TargetStart = str(colonne)+str(ligne)
         elif self.TargetEnd == None:
-            self.TargetEnd = str(ligne)+str(colonne)
+            self.TargetEnd = str(colonne)+str(ligne)
 
-    def jouer(self):
-        #while True:
-        self.board.convertIA()
-        self.board.printBoard(board.IABoard)
-        movement = False
-        while not movement :
-            move = ""
-            while self.TargetStart==None and self.TargetEnd==None:
-                print(f"Votre action Joueur {self.player} : \n")
-            move = (self.TargetStart+","+self.TargetEnd)
-            startPos,endPos = move.split(",")
+            self.move = self.TargetStart+","+self.TargetEnd
+            self.TargetStart=None
+            self.TargetEnd = None
+
+        if self.move != "":
+            startPos,endPos = self.move.split(",")
             startPos = int(startPos)
             endPos = int(endPos)
-            movement = self.action.movement(board.Board,startPos,endPos,player)
-
-        print("--------------------------------")
-        if self.player == 0:
-            self.board.convertIA() 
-            print(self.ia.play(plateau = self.board.IABoard,premier_joueur=False))
-            self.player = 1
-        else:
-            self.player = 0
-        
-        self.fenetre
-    
-
-    
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+            self.movement = self.action.movement(board.Board,startPos,endPos,self.player)
+            if self.movement != False:
+                if self.player == 0:
+                    self.board.convertIA() 
+                    print(self.ia.play(plateau = self.board.IABoard,premier_joueur=False))
+                    self.player = 1
+                else :
+                    self.player = 0
+                self.canvas.delete("all")
+                self.dessinePlateau()
+                self.dessinePions(self.board.Board)
+            self.move = ""
 
 from damier import damier
 from actions import *
 from Graphic import *
 from ia import ia
 
-g = graph()
 board = damier()
 Bot = ia()
 a = actions()
 dames = Jeu(board,Bot,a)
 
-# player = 0
-# g.dessinePlateau()
-# g.dessinePions()
-# while a.Playable:
-#     board.convertIA()
-#     board.printBoard(board.IABoard)
-#     movement = False
-#     while not movement :
-#         move = ""
-#         while not move.__contains__(","):
-#             move = input(f"Votre action Joueur {player} : \n")
-#         startPos,endPos = move.split(",")
-#         startPos = int(startPos)
-#         endPos = int(endPos)
-#         movement = a.movement(board.Board,startPos,endPos,player)
 
-#     print("--------------------------------")
-#     if player == 0:
-#         board.convertIA() 
-#         print(Bot.play(plateau = board.IABoard,premier_joueur=False))
-#         player = 1
-#     else:
-#         player = 0
 
 
