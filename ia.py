@@ -4,6 +4,8 @@ class ia:
     def __init__(self) -> None:
         self.board = []
         self.listeJouable = []
+        self.pointEat = 3
+        self.pointMove = 2
 
         pass
     
@@ -115,30 +117,30 @@ class ia:
 
             if dicoMoves[i][0] :
                 if str(i+MoveL)[0] == "9" or str(i+MoveL)[0] == "0":
-                    microListPoints[0] +=4
+                    microListPoints[0] +=self.pointMove*2
                 else :
-                    microListPoints[0] +=2
+                    microListPoints[0] +=self.pointMove
                 microListPoints[0] -= self.checkDanger(board,i+MoveL,turnPlayer,i)
 
             if dicoMoves[i][1] :
                 if str(i+MoveR)[0] == "9" or str(i+MoveR)[0] == "0":
-                    microListPoints[1] +=4
+                    microListPoints[1] +=self.pointMove*2
                 else :
-                    microListPoints[1] +=2
+                    microListPoints[1] +=self.pointMove
                 microListPoints[1] -= self.checkDanger(board,i+MoveR,turnPlayer,i)
 
             if dicoMoves[i][2]:
                 if str(i+EatL)[0] == "9" or str(i+EatL)[0] == "0":
-                    microListPoints[2] +=5
+                    microListPoints[2] +=self.pointEat*2
                 else :
-                    microListPoints[2] +=2
+                    microListPoints[2] +=self.pointEat
                 microListPoints[2] -= self.checkDanger(board,i+EatL,turnPlayer,i)
 
             if dicoMoves[i][3]:
                 if str(i+EatR)[0] == "9" or str(i+EatR)[0] == "0":
-                    microListPoints[3] +=5 
+                    microListPoints[3] +=self.pointEat*2
                 else :
-                    microListPoints[3] +=2
+                    microListPoints[3] +=self.pointEat
                 microListPoints[3] -= self.checkDanger(board,i+EatR,turnPlayer,i)
             dicoPoints[i] = microListPoints
         #print(dicoPoints)
