@@ -51,7 +51,7 @@ class actions:
         if self.checkMove(board,startPos,endPos,turnPlayer):
             if int(endPos) == int(startPos) + EatL :
                 middlePos = int(startPos) + MoveL
-                middleX,middleY = str(middlePos)[0],str(middlePos)[1]
+                middleX,middleY = int(str(middlePos)[0]),int(str(middlePos)[1])
                 board[endX][endY] = board[startX][startY]
                 board[middleX][middleY] = None
                 board[startX][startY] = None

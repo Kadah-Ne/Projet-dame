@@ -15,10 +15,8 @@ class ia:
         else :
             Player = 1
         self.estJouable(self.listingPawn(premier_joueur),Player)
-        print(self.listeJouable)
-        # caseDep = self.listeJouable[randint(0,len(self.listeJouable)-1)]
-        # caseFin = self.choixMove(caseDep,premier_joueur)
-        # return(caseDep,caseFin)
+        pos,move = self.calculPoints(self.listeJouable,self.board,Player)
+        return(pos,pos+move)
 
 
     def listingPawn(self,Player) -> list[int]:
@@ -55,9 +53,7 @@ class ia:
             return(11,9,22,18)
         
     def checkMove(self,board,startPos,endPos,turnPlayer) -> bool:
-        
         MoveR,MoveL,EatR,EatL = self.associationPlayer(turnPlayer)
-
         if board[startPos] != None and board[startPos][0] == turnPlayer:
             spacesToMove = endPos - startPos
             if spacesToMove == MoveL or spacesToMove == MoveR or spacesToMove == EatL or spacesToMove == EatR:
@@ -78,7 +74,7 @@ class ia:
                             return False
                     case (18 | -18 | 22 | -22):
                         middlePos = startPos + int(spacesToMove/2)
-                        if board[middlePos][0] != turnPlayer:
+                        if board[middlePos] != None and board[middlePos][0] != turnPlayer and board[startPos+spacesToMove] == None:
                             return True
                         else:
                             return False
@@ -86,6 +82,87 @@ class ia:
                 return False
         else :
             return False
+
+    def checkDanger(self,board,postion,player,origin):
+        MoveR,MoveL = self.associationPlayer(player)[0],self.associationPlayer(player)[1]
+        dangerLevel = 0
+        if board[postion+MoveR] != None and board[postion+MoveR][0] != player and (board[postion-MoveR] == None or (postion - MoveR == origin)):
+            dangerLevel += 1
+        if board[postion+MoveL] != None and board[postion+MoveL][0] != player and (board[postion-MoveL] == None or (postion - MoveL == origin)) :
+            dangerLevel += 1
+        if board[postion-MoveR] != None and board[postion-MoveR][0] != player and board[postion-MoveR][1] and (board[postion+MoveL] == None or (postion + MoveR == origin)):
+            dangerLevel += 1
+        if board[postion-MoveL] != None and board[postion-MoveL][0] != player and board[postion-MoveL][1] and (board[postion+MoveR] == None or (postion - MoveR == origin)):
+            dangerLevel += 1
+        return dangerLevel
+
+        
+
+    def calculPoints(self,listeJouable, board,turnPlayer):
+        
+        MoveR,MoveL,EatR,EatL = self.associationPlayer(turnPlayer)
+        dicoMoves = {}
+        for i in listeJouable :
+            microList = []
+            microList.append(self.checkMove(board,i,i+MoveL,turnPlayer))
+            microList.append(self.checkMove(board,i,i+MoveR,turnPlayer))
+            microList.append(self.checkMove(board,i,i+EatL,turnPlayer))
+            microList.append(self.checkMove(board,i,i+EatR,turnPlayer))
+            dicoMoves[i] = microList
+        dicoPoints = {}
+        for i in dicoMoves:
+            microListPoints =[0,0,0,0]
+
+            if dicoMoves[i][0] :
+                if str(i+MoveL)[0] == "9" or str(i+MoveL)[0] == "0":
+                    microListPoints[0] +=4
+                else :
+                    microListPoints[0] +=2
+                microListPoints[0] -= self.checkDanger(board,i+MoveL,turnPlayer,i)
+
+            if dicoMoves[i][1] :
+                if str(i+MoveR)[0] == "9" or str(i+MoveR)[0] == "0":
+                    microListPoints[1] +=4
+                else :
+                    microListPoints[1] +=2
+                microListPoints[1] -= self.checkDanger(board,i+MoveR,turnPlayer,i)
+
+            if dicoMoves[i][2]:
+                if str(i+EatL)[0] == "9" or str(i+EatL)[0] == "0":
+                    microListPoints[2] +=5
+                else :
+                    microListPoints[2] +=2
+                microListPoints[2] -= self.checkDanger(board,i+EatL,turnPlayer,i)
+
+            if dicoMoves[i][3]:
+                if str(i+EatR)[0] == "9" or str(i+EatR)[0] == "0":
+                    microListPoints[3] +=5 
+                else :
+                    microListPoints[3] +=2
+                microListPoints[3] -= self.checkDanger(board,i+EatR,turnPlayer,i)
+            dicoPoints[i] = microListPoints
+        #print(dicoPoints)
+        dicoChoix={}
+        for i in dicoPoints:
+            
+            bestPoint = max(dicoPoints[i])
+            tinyList =[]
+            if dicoPoints[i][0] == bestPoint:
+                tinyList.append(MoveL)
+            if dicoPoints[i][1] == bestPoint:
+                tinyList.append(MoveR)
+            if dicoPoints[i][2] == bestPoint:
+                tinyList.append(EatL)
+            if dicoPoints[i][3] == bestPoint:
+                tinyList.append(EatR)
+            dicoChoix[i] = (bestPoint,choice(tinyList))
+        bestOfTheBest = 0
+        
+        for i in dicoChoix:
+            if dicoChoix[i][0] > bestOfTheBest :
+                bestOfTheBest = dicoChoix[i][0]
+                bestMove = (i,dicoChoix[i][1])
+        return bestMove
 
     def choixMove(self,caseDep,Player):
         listeMove = []
