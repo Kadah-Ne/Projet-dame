@@ -1,100 +1,74 @@
-from pion import dame
 class actions:
     def __init__(self) -> None:
         self.Playable = True
         pass
-    def movement(self,board,startPos,endPos,currPlayer): 
+
+    def associationPlayer(self,turnPlayer) -> tuple():
+        if not turnPlayer :
+            return(-9,-11,-18,-22)
+        else:
+            return(11,9,22,18)
+
+
+    def checkMove(self,board,startPos,endPos,turnPlayer) -> bool:
         startX,startY = int(startPos[0]),int(startPos[1])
         endX,endY = int(endPos[0]),int(endPos[1])
-        startPos,endPos = int(startPos),int(endPos)
-        if board[startX][startY] != None:
-            player = board[startX][startY][0]
-            if player != currPlayer :
-                return self.IllegalMove(currPlayer)
-            else :
-                if currPlayer == 0 and endPos - startPos > 0 and not board[startX][startY][1]:
-                    return self.IllegalMove(currPlayer)
-                elif currPlayer == 1 and endPos - startPos < 0 and not board[startX][startY][1]:
-                    return self.IllegalMove(currPlayer)
-                else:
-                    if startPos+22 == endPos or startPos+18 == endPos or startPos-22 == endPos or startPos-18 == endPos: 
-                        if self.checkEat(board,startPos,endPos,player):
-                            if board[endX][endY] == None:
-                                board[endX][endY] = board[startX][startY]
-                                board[startX][startY] = None
-                            else:
-                                return self.IllegalMove(currPlayer)
-                        else:
-                                return self.IllegalMove(currPlayer)
-                    elif startPos+11 == endPos or startPos+9 == endPos or startPos-11 == endPos or startPos-9 == endPos:
-                        if board[endX][endY] == None:
-                                board[endX][endY] = board[startX][startY]
-                                board[startX][startY] = None
-                        else:
-                            return self.IllegalMove(currPlayer)
-                    else:
-                        return self.IllegalMove(currPlayer)
-                    if currPlayer == 0 and endX == 0:
-                        self.checkPromote(endX,endY,board)
-                    elif currPlayer == 1 and endX == 9:
-                        self.checkPromote(endX,endY,board)
-        else:
-            return self.IllegalMove(currPlayer)
+        MoveR,MoveL,EatR,EatL = self.associationPlayer(turnPlayer)
 
-    def checkEat(self,board,start,end,player):
-        cheater = False
-        if start+22 == end or start+18 == end or start-22 == end or start-18 == end:
-            if end - start > 0 :
-                if start+22 == end:
-                    x,y = self.posTranslator(board,start + 11)
-                    if board[x][y] != None and board[x][y][0] != player:
-                        board[x][y] = None
-                    else: 
-                        cheater = True
-                elif start+18 == end:
-                    x,y = self.posTranslator(board,start + 9)
-                    if board[x][y] != None and board[x][y][0] != player :
-                        board[x][y] = None
-                    else:
-                        cheater = True
-            elif end - start < 0:
-                if start-22 == end:
-                    x,y = self.posTranslator(board,start - 11)
-                    if board[x][y] != None and board[x][y][0] != player :
-                        board[x][y] = None
-                    else: 
-                        cheater = True
-                elif start-18 == end:
-                    x,y = self.posTranslator(board,start - 9)
-                    if board[x][y] != None and board[x][y][0] != player :
-                        board[x][y] = None
-                    else:
-                        cheater = True
-        if not cheater :
-            return(True)
-        else : 
-            return(False)
+        if board[startX][startY] != None and board[startX][startY][0] == turnPlayer:
+            spacesToMove = int(endPos) - int(startPos)
+            if spacesToMove == MoveL or spacesToMove == MoveR or spacesToMove == EatL or spacesToMove == EatR:
+                if startY == 0 and spacesToMove == MoveL:
+                    return False
+                elif startY == 9 and spacesToMove == MoveR:
+                    return False
+                elif startY == (0 or 1) and spacesToMove == EatL:
+                    return False
+                elif startY == (9 or 8) and spacesToMove == EatR:
+                    return False
+                
+                match spacesToMove:
+                    case (9 | -9 | 11 | -11):
+                        if board[endX][endY] == None:
+                            return True
+                        else :
+                            return False
+                    case (18 | -18 | 22 | -22):
+                        middleX,middleY = int(str(int(startPos) + spacesToMove/2)[0]),int(str(int(startPos) + spacesToMove/2)[1])
+                        if board[middleX][middleY][0] != turnPlayer:
+                            return True
+                        else:
+                            return False
+            else :
+                return False
+        else :
+            return False
+
+    def moveToPos(self,board,startPos,endPos,turnPlayer) :
+        MoveR,MoveL,EatR,EatL = self.associationPlayer(turnPlayer)
+        startX,startY = int(startPos[0]),int(startPos[1])
+        endX,endY = int(endPos[0]),int(endPos[1])
+        if self.checkMove(board,startPos,endPos,turnPlayer):
+            if int(endPos) == int(startPos) + EatL :
+                middlePos = int(startPos) + MoveL
+                middleX,middleY = str(middlePos)[0],str(middlePos)[1]
+                board[endX][endY] = board[startX][startY]
+                board[middleX][middleY] = None
+                board[startX][startY] = None
+            
+            elif int(endPos) == int(startPos) + EatR:
+                middlePos = int(startPos) + MoveR
+                middleX,middleY = int(str(middlePos)[0]),int(str(middlePos)[1])
+                board[endX][endY] = board[startX][startY]
+                board[middleX][middleY] = None
+                board[startX][startY] = None
+            else:
+                board[endX][endY] = board[startX][startY]
+                board[startX][startY] = None
+            return True
+        else :
+            return False
 
     def checkPromote(self,x,y,board):
         board[x][y] = (board[x][y][0],True)
         
-
-
-    def posTranslator(self,board,n : int):
-        cpt = n
-        nbi=0
-        nbj=0
-        for i in board:
-                cpt -= 10
-                if cpt < 10:
-                    for j in i:
-                        
-                        if cpt == 0 :
-                            return(nbi+1,nbj)
-                        cpt -= 1
-                        nbj+=1
-                nbi+=1
-
-    def IllegalMove(self,player):
-        print(f"Action interdite de la part du joueur {player}.")
-        return False

@@ -1,4 +1,10 @@
 import tkinter as tk
+from damier import damier
+from actions import *
+from ia import ia
+board = damier()
+Bot = ia()
+a = actions()
 
 class Jeu :
     def __init__(self,board,ia,action) -> None:
@@ -63,9 +69,7 @@ class Jeu :
 
         if self.move != "":
             startPos,endPos = self.move.split(",")
-            # startPos = int(startPos)
-            # endPos = int(endPos)
-            self.movement = self.action.movement(self.board.Board,startPos,endPos,self.player)
+            self.movement = self.action.moveToPos(self.board.Board,startPos,endPos,self.player)
             if self.movement != False:
                 if self.player == 0:
                     self.board.convertIA() 
@@ -79,21 +83,11 @@ class Jeu :
                 self.canvas.delete("all")
                 self.dessinePlateau(IaPlays)
                 self.dessinePions(self.board.Board)
-                print("----------------------")  
-                self.board.printBoard(self.board.IABoard)
-                print("----------------------")  
-                self.board.printBoardT()
-
+            else :
+                print(f"Action Interdite Joueur {self.player}")
             self.move = ""
 
-from damier import damier
-from actions import *
-from Graphic import *
-from ia import ia
 
-board = damier()
-Bot = ia()
-a = actions()
 dames = Jeu(board,Bot,a)
 
 
