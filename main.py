@@ -25,6 +25,23 @@ class Jeu :
         self.dessinePlateau("")
         self.dessinePions(self.board.Board)
         self.fenetre.mainloop()
+
+    def checkWin(self,board):
+        listePionsB = 0
+        listePionsN = 0
+        for i in board:
+            if board[i] != None:
+                if board[i][0] == 0:
+                    listePionsB +=1
+                else:
+                    listePionsN +=1
+        if listePionsB == 0 :
+            return "Noir"
+        elif listePionsN == 0 :
+            return "Blanc"
+        else:
+            return None
+            
         
         
     def dessinePlateau(self,IaPlays):
@@ -83,6 +100,10 @@ class Jeu :
                 self.canvas.delete("all")
                 self.dessinePlateau(IaPlays)
                 self.dessinePions(self.board.Board)
+                self.winner = self.checkWin(self.board.IABoard)
+                if self.winner != None:
+                    print(f"{self.winner} wins")
+                    quit()
             else :
                 print(f"Action Interdite Joueur {self.player}")
             self.move = ""
