@@ -1,41 +1,45 @@
+#Neccessite au moin Python 3.10
 from random import *
 
 class ia:
     def __init__(self) -> None:
         self.board = []
         self.listeJouable = []
+
+        #Points de priorités, si pointEat > pointMove -> mange si possible (doit etre suppérieur a 2)
         self.pointEat = 3
         self.pointMove = 2
-
         pass
     
-    def play(self,plateau : list,premier_joueur : bool) -> tuple:
-        listePions = []
+    #Fonction principale
+    def play(self, plateau : list, premier_joueur : bool) -> tuple:
         self.board = plateau
         if premier_joueur :
             Player = 0
         else :
             Player = 1
+
+        #Calcule du prochain mouvement
         self.estJouable(self.listingPawn(premier_joueur),Player)
         pos,move = self.calculPoints(self.listeJouable,self.board,Player)
         return(pos,pos+move)
 
-
-    def listingPawn(self,Player) -> list[int]:
+    #Récupere une liste de toutes les positions des pions de l'IA
+    def listingPawn(self, turnPlayer : bool) -> list[int]:
         listePions = []
         cpt = 0
         for i in self.board:
             if i != None:
                 player= i[0]
-                if Player and player == 0:
+                if turnPlayer and player == 0:
                     listePions.append(cpt)
-                elif not Player and player == 1:
+                elif not turnPlayer and player == 1:
                     listePions.append(cpt)
             cpt+=1
         return listePions
 
-    
-    def estJouable(self,ListePion,Player):
+    #Parcour la liste des pions de l'IA et récupere toutes les actions possibles de l'IA
+    def estJouable(self, ListePion : list[int], Player:bool) -> None:
         MoveR,MoveL,EatR,EatL = self.associationPlayer(Player)
         for i in ListePion:
             if self.checkMove(self.board,i,i+MoveL,Player) :
@@ -47,17 +51,19 @@ class ia:
             elif self.checkMove(self.board,i,i+EatR,Player):
                 self.listeJouable.append(i)
                 
-
-    def associationPlayer(self,turnPlayer) -> tuple():
+    #Permet de récupérer les variables de movement liée au joueur
+    def associationPlayer(self, turnPlayer : bool) -> tuple(int):
         if not turnPlayer :
             return(-9,-11,-18,-22)
         else:
             return(11,9,22,18)
-        
-    def checkMove(self,board,startPos,endPos,turnPlayer) -> bool:
+
+    #Verifie la possibilité d'une action    
+    def checkMove(self, board : list[tuple], startPos : int, endPos : int, turnPlayer : bool) -> bool:
         MoveR,MoveL,EatR,EatL = self.associationPlayer(turnPlayer)
         if board[startPos] != None and board[startPos][0] == turnPlayer:
             spacesToMove = endPos - startPos
+            #Cas pour un pion lambda
             if spacesToMove == MoveL or spacesToMove == MoveR or spacesToMove == EatL or spacesToMove == EatR:
                 if str(startPos)[-1] == "0" and spacesToMove == MoveL:
                     return False
@@ -80,7 +86,8 @@ class ia:
                             return True
                         else:
                             return False
-                        
+
+            #Cas pour une dame            
             if board[startPos][1]:
                 if turnPlayer ==0 :
                     BackR,BackL,BackEatR,BackEatL = self.associationPlayer(1)
@@ -112,7 +119,8 @@ class ia:
         else :
             return False
 
-    def checkDanger(self,board,postion,player,origin):
+    #Met un niveau de danger a une action
+    def checkDanger(self, board:list[tuple], postion:int, player:bool, origin:int) -> int:
         MoveR,MoveL = self.associationPlayer(player)[0],self.associationPlayer(player)[1]
         dangerLevel = 0
         if (0<=postion+MoveR <=99 or 0<=postion-MoveR <=99) and board[postion+MoveR] != None and board[postion+MoveR][0] != player and (board[postion-MoveR] == None or (postion - MoveR == origin)):
@@ -125,10 +133,11 @@ class ia:
             dangerLevel += 1        
         return dangerLevel
 
-    def checkUrgency(self,board,postion,player):
+    #Met un niveau d'urgence a une action (si une piece risque de se faire manger au prochain tour, essaye en priorité de la sauver)
+    def checkUrgency(self, board:list[tuple], postion:int, player:bool) -> int:
         MoveR,MoveL = self.associationPlayer(player)[0],self.associationPlayer(player)[1]
         urgencyLevel = 1
-        
+
         if (0<=postion+MoveR <=99 or 0<=postion-MoveR <=99) and board[postion+MoveR] != None and board[postion+MoveR][0] != player and (board[postion-MoveR] == None):
             urgencyLevel = 2
         if (0<=postion+MoveL <=99 or 0<=postion-MoveL <=99) and board[postion+MoveL] != None and board[postion+MoveL][0] != player and (board[postion-MoveL] == None) :
@@ -140,11 +149,11 @@ class ia:
         return urgencyLevel
 
         
-
-    def calculPoints(self,listeJouable, board,turnPlayer):
-        
+    #Pour déterminer la meilleur action, on lui attribut des point selon son niveau de dangerosité, d'urgence, si on mange, si on fais une promotion ect
+    def calculPoints(self, listeJouable:list[int], board : list[tuple], turnPlayer : bool) -> tuple:
         MoveR,MoveL,EatR,EatL = self.associationPlayer(turnPlayer)
         dicoMoves = {}
+
         for i in listeJouable :
             microList = []
             microList.append(self.checkMove(board,i,i+MoveL,turnPlayer))
@@ -189,7 +198,6 @@ class ia:
                 microListPoints[3] *= self.checkUrgency(board,i,turnPlayer)
 
             dicoPoints[i] = microListPoints
-        #print(dicoPoints)
         dicoChoix={}
         for i in dicoPoints:
             
