@@ -80,6 +80,33 @@ class ia:
                             return True
                         else:
                             return False
+                        
+            if board[startPos][1]:
+                if turnPlayer ==0 :
+                    BackR,BackL,BackEatR,BackEatL = self.associationPlayer(1)
+                else:
+                    BackR,BackL,BackEatR,BackEatL = self.associationPlayer(0)
+                if str(startPos)[-1] == "0" and spacesToMove == BackL:
+                    return False
+                elif str(startPos)[-1] == "9" and spacesToMove == BackR:
+                    return False
+                elif (str(startPos)[-1] == "0" or str(startPos)[-1] == "1" ) and spacesToMove == BackEatL:
+                    return False
+                elif (str(startPos)[-1] == "9" or str(startPos)[-1] == "8" ) and spacesToMove == BackEatR:
+                    return False
+                
+                match spacesToMove:
+                    case (9 | -9 | 11 | -11):
+                        if board[endPos] == None:
+                            return True
+                        else :
+                            return False
+                    case (18 | -18 | 22 | -22):
+                        middlePos = startPos + int(spacesToMove/2)
+                        if board[middlePos] != None and board[middlePos][0] != turnPlayer and board[startPos+spacesToMove] == None:
+                            return True
+                        else:
+                            return False
             else :
                 return False
         else :
@@ -88,15 +115,29 @@ class ia:
     def checkDanger(self,board,postion,player,origin):
         MoveR,MoveL = self.associationPlayer(player)[0],self.associationPlayer(player)[1]
         dangerLevel = 0
-        if board[postion+MoveR] != None and board[postion+MoveR][0] != player and (board[postion-MoveR] == None or (postion - MoveR == origin)):
+        if (0<=postion+MoveR <=99 or 0<=postion-MoveR <=99) and board[postion+MoveR] != None and board[postion+MoveR][0] != player and (board[postion-MoveR] == None or (postion - MoveR == origin)):
             dangerLevel += 1
-        if board[postion+MoveL] != None and board[postion+MoveL][0] != player and (board[postion-MoveL] == None or (postion - MoveL == origin)) :
+        if (0<=postion+MoveL <=99 or 0<=postion-MoveL <=99) and  board[postion+MoveL] != None and board[postion+MoveL][0] != player and (board[postion-MoveL] == None or (postion - MoveL == origin)) :
             dangerLevel += 1
-        if board[postion-MoveR] != None and board[postion-MoveR][0] != player and board[postion-MoveR][1] and (board[postion+MoveL] == None or (postion + MoveR == origin)):
+        if (0<=postion+MoveR <=99 or 0<=postion-MoveR <=99) and board[postion-MoveR] != None and board[postion-MoveR][0] != player and board[postion-MoveR][1] and (board[postion+MoveL] == None or (postion + MoveR == origin)):
             dangerLevel += 1
-        if board[postion-MoveL] != None and board[postion-MoveL][0] != player and board[postion-MoveL][1] and (board[postion+MoveR] == None or (postion - MoveR == origin)):
-            dangerLevel += 1
+        if (0<=postion+MoveL <=99 or 0<=postion-MoveL <=99) and  board[postion-MoveL] != None and board[postion-MoveL][0] != player and board[postion-MoveL][1] and (board[postion+MoveR] == None or (postion - MoveR == origin)):
+            dangerLevel += 1        
         return dangerLevel
+
+    def checkUrgency(self,board,postion,player):
+        MoveR,MoveL = self.associationPlayer(player)[0],self.associationPlayer(player)[1]
+        urgencyLevel = 1
+        
+        if (0<=postion+MoveR <=99 or 0<=postion-MoveR <=99) and board[postion+MoveR] != None and board[postion+MoveR][0] != player and (board[postion-MoveR] == None):
+            urgencyLevel = 2
+        if (0<=postion+MoveL <=99 or 0<=postion-MoveL <=99) and board[postion+MoveL] != None and board[postion+MoveL][0] != player and (board[postion-MoveL] == None) :
+            urgencyLevel = 2
+        if (0<=postion+MoveR <=99 or 0<=postion-MoveR <=99) and board[postion-MoveR] != None and board[postion-MoveR][0] != player and board[postion-MoveR][1] and (board[postion+MoveL] == None):
+            urgencyLevel = 2
+        if (0<=postion+MoveL <=99 or 0<=postion-MoveL <=99) and board[postion-MoveL] != None and board[postion-MoveL][0] != player and board[postion-MoveL][1] and (board[postion+MoveR] == None):
+            urgencyLevel = 2
+        return urgencyLevel
 
         
 
@@ -121,6 +162,7 @@ class ia:
                 else :
                     microListPoints[0] +=self.pointMove
                 microListPoints[0] -= self.checkDanger(board,i+MoveL,turnPlayer,i)
+                microListPoints[0] *= self.checkUrgency(board,i,turnPlayer)
 
             if dicoMoves[i][1] :
                 if str(i+MoveR)[0] == "9" or str(i+MoveR)[0] == "0":
@@ -128,6 +170,7 @@ class ia:
                 else :
                     microListPoints[1] +=self.pointMove
                 microListPoints[1] -= self.checkDanger(board,i+MoveR,turnPlayer,i)
+                microListPoints[1] *= self.checkUrgency(board,i,turnPlayer)
 
             if dicoMoves[i][2]:
                 if str(i+EatL)[0] == "9" or str(i+EatL)[0] == "0":
@@ -135,6 +178,7 @@ class ia:
                 else :
                     microListPoints[2] +=self.pointEat
                 microListPoints[2] -= self.checkDanger(board,i+EatL,turnPlayer,i)
+                microListPoints[2] *= self.checkUrgency(board,i,turnPlayer)
 
             if dicoMoves[i][3]:
                 if str(i+EatR)[0] == "9" or str(i+EatR)[0] == "0":
@@ -142,6 +186,8 @@ class ia:
                 else :
                     microListPoints[3] +=self.pointEat
                 microListPoints[3] -= self.checkDanger(board,i+EatR,turnPlayer,i)
+                microListPoints[3] *= self.checkUrgency(board,i,turnPlayer)
+
             dicoPoints[i] = microListPoints
         #print(dicoPoints)
         dicoChoix={}
@@ -165,9 +211,6 @@ class ia:
                 bestOfTheBest = dicoChoix[i][0]
                 bestMove = (i,dicoChoix[i][1])
         return bestMove
-
-    def choixMove(self,caseDep,Player):
-        listeMove = []
         
 
         

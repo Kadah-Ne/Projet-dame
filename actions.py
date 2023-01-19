@@ -14,6 +14,7 @@ class actions:
         startX,startY = int(startPos[0]),int(startPos[1])
         endX,endY = int(endPos[0]),int(endPos[1])
         MoveR,MoveL,EatR,EatL = self.associationPlayer(turnPlayer)
+        
 
         if board[startX][startY] != None and board[startX][startY][0] == turnPlayer:
             spacesToMove = int(endPos) - int(startPos)
@@ -25,6 +26,33 @@ class actions:
                 elif startY == (0 or 1) and spacesToMove == EatL:
                     return False
                 elif startY == (9 or 8) and spacesToMove == EatR:
+                    return False
+                
+                match spacesToMove:
+                    case (9 | -9 | 11 | -11):
+                        if board[endX][endY] == None:
+                            return True
+                        else :
+                            return False
+                    case (18 | -18 | 22 | -22):
+                        middleX,middleY = int(str(int(startPos) + spacesToMove/2)[0]),int(str(int(startPos) + spacesToMove/2)[1])
+                        if board[middleX][middleY][0] != turnPlayer:
+                            return True
+                        else:
+                            return False
+            elif board[startX][startY][1] :
+                if turnPlayer ==0 :
+                    BackR,BackL,BackEatR,BackEatL = self.associationPlayer(1)
+                else:
+                    BackR,BackL,BackEatR,BackEatL = self.associationPlayer(0)
+
+                if startY == 0 and spacesToMove == BackL:
+                    return False
+                elif startY == 9 and spacesToMove == BackR:
+                    return False
+                elif startY == (0 or 1) and spacesToMove == BackEatL:
+                    return False
+                elif startY == (9 or 8) and spacesToMove == BackEatR:
                     return False
                 
                 match spacesToMove:
@@ -65,6 +93,9 @@ class actions:
             else:
                 board[endX][endY] = board[startX][startY]
                 board[startX][startY] = None
+            
+            if (endX == 9 and turnPlayer == 1) or (endX == 0 and turnPlayer ==0):
+                self.checkPromote(endX,endY,board)
             return True
         else :
             return False
