@@ -1,4 +1,4 @@
-from pion import *
+
 class damier :
     def __init__(self):
         self.Board = []

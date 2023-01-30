@@ -52,7 +52,7 @@ class ia:
                 self.listeJouable.append(i)
                 
     #Permet de récupérer les variables de movement liée au joueur
-    def associationPlayer(self, turnPlayer : bool) -> tuple(int):
+    def associationPlayer(self, turnPlayer : bool) -> tuple:
         if not turnPlayer :
             return(-9,-11,-18,-22)
         else:
