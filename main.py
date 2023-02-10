@@ -30,8 +30,8 @@ class Jeu :
         listePionsB = 0
         listePionsN = 0
         for i in board:
-            if board[i] != None:
-                if board[i][0] == 0:
+            if i != None:
+                if i[0] == 0:
                     listePionsB +=1
                 else:
                     listePionsN +=1

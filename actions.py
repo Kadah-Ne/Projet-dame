@@ -90,6 +90,18 @@ class actions:
                 board[endX][endY] = board[startX][startY]
                 board[middleX][middleY] = None
                 board[startX][startY] = None
+            elif board[startX][startY][1] == True and int(endPos) == int(startPos) - EatR:
+                middlePos = int(startPos) - MoveR
+                middleX,middleY = int(str(middlePos)[0]),int(str(middlePos)[1])
+                board[endX][endY] = board[startX][startY]
+                board[middleX][middleY] = None
+                board[startX][startY] = None
+            elif board[startX][startY][1] == True and int(endPos) == int(startPos) - EatL:
+                middlePos = int(startPos) - MoveL
+                middleX,middleY = int(str(middlePos)[0]),int(str(middlePos)[1])
+                board[endX][endY] = board[startX][startY]
+                board[middleX][middleY] = None
+                board[startX][startY] = None
             else:
                 board[endX][endY] = board[startX][startY]
                 board[startX][startY] = None
